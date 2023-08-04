@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Recibir y mostrar imagen</title>
+
+</head>
+
+<body>
+  <div>
+    <form action="">
+      <label for="ean">Ingrese el EAN:</label>
+      <input type="number" id="ean" name="ean" value="7790040116610" />
+      <input type="button" value="Consultar" onclick="obtenerImagen()">
+      <button onclick="guardarOCompartirImagen()">Guardar o Compartir Imagen</button>
+    </form>
+
+
+
+
+      <div id="imagen-container"></div>
+      
+
+  </div>
+  <script>
+    function obtenerImagen() {
+      const ean = document.getElementById("ean").value;
+      if (!ean) {
+        alert("Por favor, ingrese un parámetro EAN válido.");
+        return;
+      }
+
+      const url = `http://192.169.1.10:88/Precios/${ean}`;
+      fetch(url)
+        .then((response) => response.text())
+        .then((base64Image) => {
+          console.log();
+          const imagenContainer = document.getElementById("imagen-container");
+          var imghtml = `
+          <div id="areaImprimir">
+            <img src="data:image/jpeg;base64,${base64Image.slice(1, -1)}" style="cursor: pointer;" onclick="printDiv('areaImprimir')">
+          </div> `;
+          imagenContainer.innerHTML = imghtml;
+        
+        })
+        .catch((error) => {
+          const imagenContainer = document.getElementById("imagen-container");
+          var imghtml = `<h5>"Error al obtener la imagen:", ${error}</h5> `;
+          imagenContainer.innerHTML = imghtml;
+        }
+
+        );
+    }
+
+    function printDiv(nombreDiv) {
+      var contenido = document.getElementById(nombreDiv).innerHTML;
+      var contenidoOriginal = document.body.innerHTML;
+      document.body.innerHTML = contenido;
+      window.print();
+      document.body.innerHTML = contenidoOriginal;
+    }
+
+    function guardarOCompartirImagen() {
+    const imagen = document.querySelector("#imagen-container img");
+    const base64Image = imagen.src.split(",")[1];
+
+    const blob = base64toBlob(base64Image, "image/jpeg");
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "ean.jpg"; 
+    a.style.display = "none";
+    document.body.appendChild(a);
+    a.click();
+    window.URL.revokeObjectURL(url);
+  }
+
+  function base64toBlob(base64, contentType) {
+    const byteCharacters = atob(base64);
+    const byteArrays = [];
+    for (let offset = 0; offset < byteCharacters.length; offset += 512) {
+      const slice = byteCharacters.slice(offset, offset + 512);
+      const byteNumbers = new Array(slice.length);
+      for (let i = 0; i < slice.length; i++) {
+        byteNumbers[i] = slice.charCodeAt(i);
+      }
+      const byteArray = new Uint8Array(byteNumbers);
+      byteArrays.push(byteArray);
+    }
+    const blob = new Blob(byteArrays, { type: contentType });
+    return blob;
+  }
+  </script>
+</body>
+
+</html>

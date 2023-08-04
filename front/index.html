@@ -1,60 +1,82 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <title>Recibir y mostrar imagen</title>
 
   <style>
   </style>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
 </head>
+
 <body class="container">
-<div class="col">
- 
-</div>
-<div class="card">
+  <div class="col">
+
+  </div>
+  <div class="card">
     <div class="card-body">
-        <label class="fs-2" for="ean">Ingrese el EAN:</label>
-    <br>
-    <input class="form-control" type="number" id="ean" name="ean">
-    <div class="d-grid gap-2">
+      <label class="fs-2" for="ean">Ingrese el EAN:</label>
+      <br>
+      <input class="form-control" type="number" id="ean" name="ean" value="7790040116610">
+      <div class="d-grid gap-2">
         <button class="btn btn-primary py-5 my-2" onclick="obtenerImagen()">Consultar</button>
       </div>
- 
-    <div  class="m-auto" id="imagen-container" style="width: 50px;"></div>.
+
+      <div class="" id="imagen-container" onclick="printDiv('areaImprimir')"" style=" width: 50px;">
+      </div>
     </div>
   </div>
+
   <script>
     function obtenerImagen() {
+
       const ean = document.getElementById('ean').value;
       if (!ean) {
         alert('Por favor, ingrese un parámetro EAN válido.');
         return;
       }
 
-      const url = `http://localhost:5053/Precios?EAN=${ean}`;
+      const url = `http://172.17.2.198:88/Precios/${ean}`;
       fetch(url)
         .then(response => response.text())
         .then(base64Image => {
           const imagenContainer = document.getElementById('imagen-container');
           var imghtml = `
-          <div id="areaImprimir" onclick="printDiv('areaImprimir')">
-              <img src="data:image/jpeg;base64,${base64Image.slice(1, -1)}" style="cursor: pointer; transform: rotate(-90deg); ">
+          <div id="areaImprimir" >
+                <img src="data:image/jpeg;base64,${base64Image.slice(1, -1)}" style="cursor: pointer; " onclick="printDiv('areaImprimir')">
             </div>
           `;
           imagenContainer.innerHTML = imghtml;
+          cordova.plugins.printer.print(`base64,${base64Image.slice(1, -1)}`);
         })
-        .catch(error => console.error('Error al obtener la imagen:', error));
+        .catch(error => {
+          const imagenContainer = document.getElementById("imagen-container");
+          var imghtml = `<h5>"Error al obtener la imagen:", ${error}</h5> `;
+          imagenContainer.innerHTML = imghtml;
+        });
     }
 
     function printDiv(nombreDiv) {
-    var contenido= document.getElementById(nombreDiv).innerHTML
-    var contenidoOriginal= document.body.innerHTML;
-    document.body.innerHTML = contenido;
-    window.print();
-    document.body.innerHTML = contenidoOriginal;
+      var contenido = document.getElementById(nombreDiv).innerHTML
+      var contenidoOriginal = document.body.innerHTML;
+      document.body.innerHTML = contenido;
+       cordova.plugins.printer.print(contenido, 'ean.jpg', function () {
+        console.log('Impresión exitosa.');
+      }, function (error) {
+        console.error('Error al imprimir: ' + error);
+      });
+      document.body.innerHTML = contenidoOriginal;
     }
 
+
+
+
+
   </script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm"
+    crossorigin="anonymous"></script>
 </body>
+
 </html>

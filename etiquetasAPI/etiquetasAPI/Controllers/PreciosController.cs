@@ -7,7 +7,7 @@ namespace etiquetasAPI.Controllers
     [Route("[controller]")]
     public class PreciosController : ControllerBase
     {
-        [HttpGet(Name = "/test/{EAN}")]
+        [HttpGet("/[controller]/{EAN}")]
         public byte[] test(string EAN)
         {
             ReportingServiceClient rep = new ReportingServiceClient();

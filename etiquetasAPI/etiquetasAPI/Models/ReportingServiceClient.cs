@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 public class ReportingServiceClient
 {
-    private  readonly string REPORTING_SERVICE_URL = "http://srv-lab3:9999/ReportServer";
+    
     private  readonly string USERNAME = "mcastillo";
     private  readonly string PASSWORD = "33635537";
 
@@ -21,11 +21,10 @@ public class ReportingServiceClient
             var handler = new HttpClientHandler { Credentials = creds };
             using (var httpclient = new HttpClient(handler))
             {
-                EAN = "7790040116610"; // 7790070418425
-
                 Console.WriteLine("Construir la URL de la solicitud");
                 // Construir la URL de la solicitud
-                var url = REPORTING_SERVICE_URL + "?%2fPrecios%2fMinorista%2fGondola%2fPrecio+Individual&EAN=" + EAN + "&rc:Parameters=Collapsed&rc:Toolbar=false&rs:Format=IMAGE&rc:OutputFormat=JPEG&rs:Command=Render";
+                                
+                var url = "http://reportesdino/ReportServer?%2fPrecios%2fMinorista%2fPrecio+Gondola+Minorista+LandScape_57mm&rs:Command=Render&ean="+EAN+"&Sucursal=0ac9a4ba-7642-422c-903f-6faacbe43249&rs:Format=IMAGE&rc:OutputFormat=JPEG";
 
                 Console.WriteLine("Realizar la solicitud GET al servicio de Reporting Services");
                 // Realizar la solicitud GET al servicio de Reporting Services
